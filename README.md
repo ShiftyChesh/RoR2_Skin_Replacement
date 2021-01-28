@@ -91,7 +91,7 @@ Start by going to the Animation tab (up top). You will want to change the bottom
 
 Now we can watch your model move!
 
-![Watch animation](images/movement.mp4)
+![Watch animation](images/movement.gif)
 
 Hmmm... That doesn't look right. Why aren't the arms and legs moving?
 Blame the IK solver. While IK is enabled the bones will follow the IK target instead of the animation. We solve that by disabling all IK Bones. The IK bones are yellow, and IK can be found and turned off in the Bone Constraint properties menu by clicking the eye closed. you can also turn off all IKs at once by selecting all IK bones, right lcickign the eye (when its already closed) and select "Copy to Selected".
@@ -125,11 +125,11 @@ Simple. You should rotate the bone in edit mode until the axis line up. The actu
 
 So how does our animation look now?
 
-![corrected](images/corrected_movement.mp4)
+![corrected](images/corrected_movement.gif)
 
 Hey! that looks pretty good? Lets see try another animation to make sure its working right! Lets search the animation list for "place" to find the place turret anim.
 
-![turret](images/place_turret_wrong.mp4)
+![turret](images/clipping.gif)
 
 ...Darnit.
 
@@ -144,7 +144,7 @@ Just select your model, go into Pose mode, and move the named bones into roughly
 Perfect! We're done right?
 ...No. We need to **Set it as our rest position**. **But not yet**. because if we do the mesh will snap back to normal T-pose while the armature looks the same (there are a ton of questions about this on stackexchange). instead find all the objects of your model, **find the Armature Modifier** (in the wrench tab), and **apply it**. Now you can set it as your rest position with **CTRL+A**. (Normally in blender you want to add the armature modifier back to the objects for further posing, but since we are about to export we don't need to)
 
-![Perfect](images/Perfect_run.mp4)
+![Perfect](images/perfect.gif)
 
 Time to export to Unity.
 
