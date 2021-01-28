@@ -179,7 +179,7 @@ Specficially, you will need to replace:
 
 Run build again and the compiled .dll can be added to your r2modman, or BepInEx.
 
-
+![Finished](images/finished.png)
 
 # BugFixing
 - Q - My Mesh was added, but the old mesh is also visible.
