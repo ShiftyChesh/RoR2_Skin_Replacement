@@ -10,6 +10,7 @@ using UnityEngine;
 /// KingEnderBrine for his wonderful tutorials.
 /// RuneFox237 for his Dynamic Bone addition script that I used as a reference.
 /// 
+
 //NameSpace and SkinName are generated from SkinDef Generator
 namespace %%PluginName%%
 {
@@ -19,6 +20,7 @@ namespace %%PluginName%%
         ///////////////////////////////////////////////////////////
         /// Stuff you should Change
         const string New_MODEL_ASSET_NAME = "%%PREFABNAME%%.prefab";
+        private static %%PluginName%%Plugin Instance { get; set; }
 
         partial void AfterAwake()
         {
@@ -38,7 +40,7 @@ namespace %%PluginName%%
 
         //This uses Name of class 
         public static SkinDef SkinDef { get; private set; }
-        private static PadoruEngiPlugin Instance { get; set; }
+        
         private static ManualLogSource InstanceLogger => Instance?.Logger;
         private static bool? MyModification = null;
 
@@ -94,7 +96,7 @@ namespace %%PluginName%%
             var originalArmature = tagetObject.GetComponentsInChildren<Transform>().First(tf => tf.name == "ROOT").parent;
             var name = originalArmature.name;
 
-            var armature = referenceObject.GetComponentsInChildren<Transform>().First( tf => tf.name == "ROOT");
+            var armature = referenceObject.GetComponentsInChildren<Transform>().First( tf => tf.name == "ROOT").parent;
 
             var skinRenderer = tagetObject.GetComponentInChildren<SkinnedMeshRenderer>();
             if(skinRenderer == null){
