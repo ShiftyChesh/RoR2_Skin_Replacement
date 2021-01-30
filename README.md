@@ -65,6 +65,9 @@ Once you Load the RoR2 character with the animations, there are 4 requirements i
 If you do not do these 4 things, the skin will still import, but it will not look good.
 If you wish to test exporting your skin mod into RoR2 without doing these 4 steps, skip to the [Unity Section](#Unity). YOU STILL NEED TO RENAME THE FIRST BONE ROOT.
 
+## Step 0
+Cleanup unecessary objects. A number of meshes contain additional objects (lights, empties, etc.) that don't do anything to the actual model. They will take up space and possibly causes errors later. They need to be removed. Rule of thumb: if it isnt an armature or mesh, delete it.
+
 ## Step 1
 Set the custom mesh to about the same size. ![It doesn't have to be perfect](images/about_same_size.png), but you hurtbox won't be changing with the skin, so if they are too different it will be hard to play with.
 

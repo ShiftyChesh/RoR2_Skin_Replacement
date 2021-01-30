@@ -105,11 +105,11 @@ namespace %%PluginName%%
                 skinRenderer = obj.AddComponent<SkinnedMeshRenderer>();
             }
             var newSkinRenderers = referenceObject.GetComponentsInChildren<SkinnedMeshRenderer>();
-            var index = -1;
-            var startTfDict = originalArmature.parent.GetComponentsInChildren<Transform>().ToDictionary(tf => {
-                index++;
-                return tf.name +"-"+ index;
-                });
+            var startTfDict = new Dictionary<string,Transform>();
+            foreach(var tf in originalArmature.parent.GetComponentsInChildren<Transform>()){
+                if(!startTfDict.ContainsKey(tf.name))
+                    startTfDict.Add(tf.name,tf);
+            }
             var conversions = new Dictionary<Transform,Transform>(); //show how to convert new transform tree into original one
 
             var bones = skinRenderer.bones;
