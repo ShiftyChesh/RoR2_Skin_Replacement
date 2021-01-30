@@ -1,5 +1,5 @@
 # Shifty's Character Skin Import Guide
-Version 0.5 
+Version 0.7
 
 
 
@@ -156,7 +156,7 @@ Time to export to Unity.
 
 # Unity
 
-WARNING: As of the 0.5 release, not all information regarding exporting with Uniy has not been finalized and is subject to change. Later versions may have a more streamlined approach to adding the custom skin.
+WARNING: As of the 0.7 release, not all information regarding exporting with Uniy has not been finalized and is subject to change. Later versions may have a more streamlined approach to adding the custom skin.
 
 
 The process is still fairly similar to the [normal unity steps](https://github.com/risk-of-thunder/R2Wiki/wiki/Creating-skin-for-vanilla-characters-with-custom-model) of creating a custom skin from the Wiki, as the AssetBundle Script makes this process easier, though not strictly necessary.
@@ -168,6 +168,9 @@ Create a prefab of it by draging it into the scene, then back into the file list
 
 Now create a SkinMeshInfo & SkinDefiniton for the model. Add the prefab as an Additional Resource for the SKinDefinition.
 ![skinmod setup](images/Setup_skinmod.png)
+
+Before moving on the the build step, make sure the prefab looks correct. Sometimes errors can slip by in the prefab without your notice. It should look roughly like this. Notice how the main object contains an Armature object that holds all the bones, and the rest of the objects are Mesh objects. Make sure the bone names havent changed!
+![Looks Good](images/End_Prefab.png)
 
 Now all we have to do is setup the skindefinitoin. Fortunately you only need to change **2** details! The body name and icon.
 ![body and icon](images/skindefinition.png)
@@ -187,6 +190,9 @@ Run build again and the compiled .dll can be added to your r2modman, or BepInEx.
 
 
 
+
+
+
 # BugFixing
 - Q - My Mesh was added, but the old mesh is also visible.
   - A - Make sure one your model's meshes are named after the meshes you want to replace. Ex. the Engineer's main mesh is named *EngiMesh* so I need one of my meshes to have the name *EngiMesh*.
@@ -196,3 +202,5 @@ Run build again and the compiled .dll can be added to your r2modman, or BepInEx.
   - A - I'm still working on that one.
 - Q - switching skins in the editor messes up the character!
   - A - It only messes it up in the character select room. It doesn't carry past (I'm working on it)
+- Q - Why are only SOME of my armature bones moving (usually the upper half bones)?
+  - A - Make sure your **prefab** has the same bone names as the mesh you want to copy. When making copies of the imported Skin into a prefab, Unity may add "1" to the end of a name, causing the bones to fail to connect.
