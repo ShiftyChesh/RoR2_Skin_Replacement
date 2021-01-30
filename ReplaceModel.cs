@@ -138,7 +138,7 @@ namespace %%PluginName%%
                 }
                 conversions[bone] = oldBone;
                 finalBones[i] = oldBone;
-                bone.gameObject.CopyAllComponents(oldBone.gameObject);
+                bone.gameObject.CopyAllComponentsTo(oldBone.gameObject);
 
                 if(oldBone.transform.localRotation != bone.localRotation){
                     InstanceLogger.LogWarning("Cannot edit rotation of bone: "+oldBone.name);
@@ -158,7 +158,7 @@ namespace %%PluginName%%
                     // oldSkin = GameObject.Instantiate(skin.gameObject,parent).GetComponent<SkinnedMeshRenderer>();
                     // oldSkin.name = skin.name;
                 }
-                skin.gameObject.CopyAllComponents(bone.gameObject);
+                skin.gameObject.CopyAllComponentsTo(bone.gameObject);
                 
                 bone.GetComponent<SkinnedMeshRenderer>().bones = finalBones;
 
@@ -170,14 +170,16 @@ namespace %%PluginName%%
     }
     public static class ComopnentExtensions{
   
-        public static void CopyAllComponents(this GameObject original, GameObject destination){
+        public static void CopyAllComponentsTo(this GameObject original, GameObject destination){
             var parent = destination.transform.parent;
+            var name = destination.name;
             foreach(var comp in original.GetComponents<Component>()){
-                comp.CopyComponent(destination);
+                comp.CopyComponentTo(destination);
             }
             destination.transform.parent = parent;
+            destination.name = name;
         }
-        public static T CopyComponent<T>(this T original, GameObject destination) where T : Component
+        public static T CopyComponentTo<T>(this T original, GameObject destination) where T : Component
         {
             System.Type type = original.GetType();
             var dst = destination.GetComponent(type) as T;
