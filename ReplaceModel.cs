@@ -69,6 +69,9 @@ namespace %%PluginName%%
                 else if(MyModification == null){ //need to modify this skin!
                     var newModelName = New_MODEL_ASSET_NAME;
                     var newModelAsset = assetBundle.LoadAsset(newModelName); //load in new armature to replace old armature
+                    if(newModelAsset == null){
+                        InstanceLogger.LogError("Unable to load Prefab "+newModelName);
+                    }
                     var newModel = GameObject.Instantiate(newModelAsset) as GameObject; //instantiate in world area. Doesnt matter because we delete it later.
                     replaceSkinMod(modelObject, newModel);
                 }
@@ -125,7 +128,7 @@ namespace %%PluginName%%
                 Transform oldBone;
                 if(!startTfDict.TryGetValue(bone.name, out oldBone)){ //if new bone does not exist in original armature
                     if(!conversions.TryGetValue(bone.parent,out var parent)){
-                        Debug.Log($"Bone List ordered a child bone {bone.name} before it's parent bone {bone.parent.name}");
+                        InstanceLogger.LogError($"Bone List ordered a child bone {bone.name} before it's parent bone {bone.parent.name}");
                     }
                     //var parent = conversions[bone.parent]; //get the parent of the original bone, and find ITS conversion
                     oldBone = new GameObject(bone.name).transform; //create bone in original armature 
@@ -138,7 +141,7 @@ namespace %%PluginName%%
                 bone.gameObject.CopyAllComponents(oldBone.gameObject);
 
                 if(oldBone.transform.localRotation != bone.localRotation){
-                    Debug.Log("Cannot edit rotation of bone: "+oldBone.name);
+                    InstanceLogger.LogWarning("Cannot edit rotation of bone: "+oldBone.name);
                 }
             }
             
