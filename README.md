@@ -20,16 +20,18 @@ CONS
 
 ### Tools Used
 Blender 2.8+
+
 Unity 2018.4.16f1
+
 [RoR2-BlenderScripts](https://github.com/KingEnderBrine/-RoR2-BlenderScripts/tree/master/CharacterScripts)
 
 
 ### Editing Tricks
-This heading is for listing some of the convenient tricks to make Bledner editing easier. 
-F2 - rename selected
-turn on X-axis mirroring to move bones on both sides of the character
-turn on X-axis mirroring to have identical bone roll on both sides. (these are separate options)
-Space - starts/stops animation (to see if the model moves right)
+This heading is for listing some of the convenient shortcuts to make Blender editing easier. 
+- F2 - rename selected
+- turn on X-axis mirroring to move bones on both sides of the character
+- turn on X-axis mirroring to have identical bone roll on both sides. (these are separate options)
+
 
 
 
@@ -127,7 +129,7 @@ So how does our animation look now?
 
 ![corrected](images/corrected_movement.gif)
 
-Hey! that looks pretty good? Lets see try another animation to make sure its working right! Lets search the animation list for "place" to find the place turret anim.
+Hey! that looks pretty good? Lets see try another animation to make sure its working right! Lets search the animation list for "place" to find the place turret anim. The models movements should replicate the engineers movements now!
 
 ![turret](images/clipping.gif)
 
@@ -138,10 +140,11 @@ Hey! that looks pretty good? Lets see try another animation to make sure its wor
 Last step!
 This part is "simple", yet also convoluted if you don't understand how Blender armature's work.
 
-Just select your model, go into Pose mode, and move the named bones into roughly the same position.
+We need to have our model (who has a default T-pose) look more like engi's defualt pose (more of an A-pose). To do this, just select your model, go into Pose mode, and move the named bones into roughly the same position.
 ![roughtly the same](images/Fixed_default_pose.png)
 
 Perfect! We're done right?
+
 ...No. We need to **Set it as our rest position**. **But not yet**. because if we do the mesh will snap back to normal T-pose while the armature looks the same (there are a ton of questions about this on stackexchange). instead find all the objects of your model, **find the Armature Modifier** (in the wrench tab), and **apply it**. Now you can set it as your rest position with **CTRL+A**. (Normally in blender you want to add the armature modifier back to the objects for further posing, but since we are about to export we don't need to)
 
 ![Perfect](images/perfect.gif)
@@ -179,7 +182,7 @@ Specficially, you will need to replace:
 
 Run build again and the compiled .dll can be added to your r2modman, or BepInEx.
 
-![Finished](images/finished.png)
+
 
 # BugFixing
 - Q - My Mesh was added, but the old mesh is also visible.

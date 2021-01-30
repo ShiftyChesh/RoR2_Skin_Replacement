@@ -89,17 +89,15 @@ namespace %%PluginName%%
         /// It just works! c'est la vie
         /// </summary>
         /// <param name="modelObject"></param>
-        private static void replaceSkinMod(GameObject modelObject, GameObject prefabObject)
-        {
-
-            var originalArmature = modelObject.GetComponentsInChildren<Transform>().First(tf => tf.name.ToLower().Contains("armature"));
+        private static void replaceSkinMod(GameObject tagetObject, GameObject referenceObject){
+        
+            var originalArmature = tagetObject.GetComponentsInChildren<Transform>().First(tf => tf.name == "ROOT").parent;
             var name = originalArmature.name;
 
-            var armature = prefabObject.GetComponentsInChildren<Transform>().First(tf => tf.name.ToLower().Contains("armature"));
+            var armature = referenceObject.GetComponentsInChildren<Transform>().First( tf => tf.name == "ROOT");
 
-            var skinRenderer = modelObject.GetComponentInChildren<SkinnedMeshRenderer>();
-            if (skinRenderer == null)
-            {
+            var skinRenderer = tagetObject.GetComponentInChildren<SkinnedMeshRenderer>();
+            if(skinRenderer == null){
                 var obj = new GameObject("MyMesh");
                 obj.transform.parent = armature.parent;
                 skinRenderer = obj.AddComponent<SkinnedMeshRenderer>();
@@ -107,23 +105,24 @@ namespace %%PluginName%%
             var newSkinRenderers = armature.parent.GetComponentsInChildren<SkinnedMeshRenderer>();
 
             var startTfDict = originalArmature.parent.GetComponentsInChildren<Transform>().ToDictionary(tf => tf.name);
-            var conversions = new Dictionary<Transform, Transform>(); //show how to convert new transform tree into original one
+            var conversions = new Dictionary<Transform,Transform>(); //show how to convert new transform tree into original one
 
             var bones = skinRenderer.bones;
             var nBones = newSkinRenderers[0].bones;
 
             //disable skinmeshrenderer so it odesnt mess up setup of bones
             skinRenderer.enabled = false;
-
+            Transform myRoot = originalArmature.GetComponentsInChildren<Transform>().First(b => b.name == "ROOT");
             //This loop runs on the assumption that parents are always evaluated before their children. If not then uh-oh...
             Transform[] finalBones = new Transform[nBones.Length];
-            for (int i = 0; i < nBones.Length; i++)
-            {
+            for(int i=0; i < nBones.Length; i++){
                 var bone = nBones[i];
                 Transform oldBone;
-                if (!startTfDict.TryGetValue(bone.name, out oldBone))
-                { //if not old bone exists
-                    var parent = conversions[bone.parent]; //convert to parent for original tree
+                if(!startTfDict.TryGetValue(bone.name, out oldBone)){ //if new bone does not exist in original armature
+                    if(!conversions.TryGetValue(bone.parent,out var parent)){
+                        Debug.Log($"Bone List ordered a child bone {bone.name} before it's parent bone {bone.parent.name}");
+                    }
+                    //var parent = conversions[bone.parent]; //get the parent of the original bone, and find ITS conversion
                     oldBone = new GameObject(bone.name).transform; //create bone in original armature 
 
                     // yes I could have just moved/instantiated the old bone tree instead of making a new bone, but that makes things messy
@@ -131,48 +130,64 @@ namespace %%PluginName%%
                 }
                 conversions[bone] = oldBone;
                 finalBones[i] = oldBone;
-                oldBone.transform.localRotation = bone.localRotation;
-                oldBone.transform.localPosition = bone.localPosition;
-                oldBone.transform.localScale = bone.localScale;
+                bone.gameObject.CopyAllComponents(oldBone.gameObject);
 
-
-                if (oldBone.transform.localRotation != bone.localRotation)
-                {
-                    Debug.Log("Cannot edit rotation of bone: " + oldBone.name);
+                if(oldBone.transform.localRotation != bone.localRotation){
+                    Debug.Log("Cannot edit rotation of bone: "+oldBone.name);
                 }
             }
-            Transform myRoot = originalArmature.GetComponentsInChildren<Transform>().First(b => b.name == "ROOT");
-            for (int k = 0; k < newSkinRenderers.Length; k++)
-            {
+            
+            for(int k=0; k < newSkinRenderers.Length; k++){
                 var skin = newSkinRenderers[k];
                 Transform bone;
-                SkinnedMeshRenderer oldSkin;
-                if (startTfDict.TryGetValue(skin.name, out bone))
-                { //if found skin with name 
-                    oldSkin = bone.GetComponent<SkinnedMeshRenderer>();
-                    if (oldSkin == null) //no skinned mesh? create one!
-                        oldSkin = bone.gameObject.AddComponent<SkinnedMeshRenderer>();
-                }
-                else
-                { //didnt find skin with same name. So create one!
-                  //meshes are created at same level as the armature
+                if(!startTfDict.TryGetValue(skin.name, out bone)){ //if found gameobject
+                    //meshes are created at same level as the armature
                     Transform parent;
-                    if (!conversions.TryGetValue(skin.transform.parent, out parent)) //allows meshes to be laoded correctly even if not a child of mdl.
+                    if(!conversions.TryGetValue(skin.transform.parent, out parent)) //allows meshes to be laoded correctly even if not a child of mdl.
                         parent = originalArmature.parent;
-                    oldSkin = GameObject.Instantiate(skin.gameObject, parent).GetComponent<SkinnedMeshRenderer>();
+                    bone = new GameObject(skin.name).transform;
+                    bone.parent = parent;
+                    // oldSkin = GameObject.Instantiate(skin.gameObject,parent).GetComponent<SkinnedMeshRenderer>();
+                    // oldSkin.name = skin.name;
                 }
-                oldSkin.bones = finalBones; //bones 
-                oldSkin.materials = skin.materials;
-                oldSkin.sharedMesh = skin.sharedMesh;
-                oldSkin.rootBone = myRoot; //needs to be set for new skinmesh renderers
+                skin.gameObject.CopyAllComponents(bone.gameObject);
+                
+                bone.GetComponent<SkinnedMeshRenderer>().bones = finalBones;
+
             }
-            // var newSkin = armature.parent.GetComponentsInChildren<SkinnedMeshRenderer>().FirstOrDefault(c => c.name == "EngiMesh");
-            // skinRenderer.bones = finalBones;
-            // skinRenderer.materials = newSkin.materials;
-            // skinRenderer.sharedMesh = newSkin.sharedMesh;
 
             skinRenderer.enabled = true;
             Destroy(armature.gameObject);
         }
+    }
+    public static class ComopnentExtensions{
+  
+        public static void CopyAllComponents(this GameObject original, GameObject destination){
+            var parent = destination.transform.parent;
+            foreach(var comp in original.GetComponents<Component>()){
+                comp.CopyComponent(destination);
+            }
+            destination.transform.parent = parent;
+        }
+        public static T CopyComponent<T>(this T original, GameObject destination) where T : Component
+        {
+            System.Type type = original.GetType();
+            var dst = destination.GetComponent(type) as T;
+            if (!dst) dst = destination.AddComponent(type) as T;
+            var fields = type.GetFields();
+            foreach (var field in fields)
+            {
+                if (field.IsStatic) continue;
+                field.SetValue(dst, field.GetValue(original));
+            }
+            var props = type.GetProperties();
+            foreach (var prop in props)
+            {
+                if (!prop.CanWrite || !prop.CanWrite || prop.Name == "name") continue;
+                prop.SetValue(dst, prop.GetValue(original, null), null);
+            }
+            return dst as T;
+        }
+    
     }
 }
