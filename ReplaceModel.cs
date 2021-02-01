@@ -124,7 +124,12 @@ namespace %%PluginName%%
             //This loop runs on the assumption that parents are always evaluated before their children. If not then uh-oh...
             Transform[] finalBones = new Transform[nBones.Length];
             for(int i=0; i < nBones.Length; i++){
+                
                 var bone = nBones[i];
+                var removeIndex = bone.name.IndexOf(" 1"); //remove any name errors because of importing, just in case the user hasn't
+                if(removeIndex != -1){
+                    bone.name = bone.name.Substring(0,removeIndex);
+                }
                 Transform oldBone;
                 if(!startTfDict.TryGetValue(bone.name, out oldBone)){ //if new bone does not exist in original armature
                     if(!conversions.TryGetValue(bone.parent,out var parent)){
