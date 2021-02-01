@@ -143,7 +143,16 @@ namespace %%PluginName%%
                 }
                 conversions[bone] = oldBone;
                 finalBones[i] = oldBone;
-                bone.gameObject.CopyAllComponentsTo(oldBone.gameObject);
+                bone.gameObject.CopyAllComponentsTo(oldBone.gameObject); //copy transform, etc
+
+                var dym = oldBone.GetComponent<DynamicBone>(); //The dynamic bones don't work unless you retarget their ROOT to the correct armature
+                if(dym != null){
+                    if(dym.m_Root != null && conversions.TryGetValue(dym.m_Root,out var newRoot)){
+                        dym.m_Root = newRoot;
+                    }else{
+                        dym.m_Root = dym.transform.parent;
+                    }
+                }
 
                 if(oldBone.transform.localRotation != bone.localRotation){
                     InstanceLogger.LogWarning("Cannot edit rotation of bone: "+oldBone.name);
